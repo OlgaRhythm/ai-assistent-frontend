@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ApiError, generateTraceId, sendSupportMessage, setAuthToken } from "./api/client";
+import { ApiError, generateTraceId, reportFrontendError, sendSupportMessage, setAuthToken } from "./api/client";
 import { ResponseType } from "./api/types";
 import { ChatWindow } from "./components/ChatWindow";
 import { MessageInput } from "./components/MessageInput";
@@ -73,6 +73,7 @@ function App() {
         error instanceof ApiError
           ? error.message
           : "Unexpected error while sending the message.";
+      reportFrontendError(error instanceof Error ? error.message : String(error));
       addMessage({ id: createMessageId(), role: "system", text, variant: "error" });
     } finally {
       setIsSending(false);

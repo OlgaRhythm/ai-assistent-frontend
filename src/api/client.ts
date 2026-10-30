@@ -186,3 +186,11 @@ export function sendSupportMessage(
 export function fetchOrders(): Promise<Order[]> {
   return request<Order[]>("/orders");
 }
+
+export function reportFrontendError(message: string, extra?: { stack?: string; url?: string }): void {
+  fetch(`${API_BASE_URL}/logs/frontend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ traceId: generateTraceId(), message, ...extra }),
+  }).catch(() => {});
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ApiError, fetchOrders } from "../api/client";
+import { ApiError, fetchOrders, reportFrontendError } from "../api/client";
 import type { Order } from "../api/types";
 
 interface OrderSelectProps {
@@ -29,6 +29,7 @@ export function OrderSelect({
         if (!cancelled) {
           setOrders([]);
           setError(err instanceof ApiError ? err.message : "Failed to load orders.");
+          reportFrontendError(err instanceof Error ? err.message : String(err));
         }
       });
 
