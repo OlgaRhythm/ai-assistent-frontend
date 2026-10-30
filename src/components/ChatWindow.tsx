@@ -5,7 +5,6 @@ import { TypingIndicator } from "./TypingIndicator";
 
 interface ChatWindowProps {
   messages: ChatMessage[];
-  userId: number;
   selectedOrderId: number | undefined;
   onOrderChange: (orderId: number | undefined) => void;
   onOrderApply: (orderId: number) => void;
@@ -15,7 +14,6 @@ interface ChatWindowProps {
 
 export function ChatWindow({
   messages,
-  userId,
   selectedOrderId,
   onOrderChange,
   onOrderApply,
@@ -35,7 +33,6 @@ export function ChatWindow({
           <ChatMessageItem
             key={message.id}
             message={message}
-            userId={userId}
             selectedOrderId={selectedOrderId}
             onOrderChange={onOrderChange}
             onOrderApply={onOrderApply}

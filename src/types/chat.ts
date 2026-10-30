@@ -1,5 +1,3 @@
-import type { SupportTechnicalInfo } from "../api/types";
-
 export type ChatMessage =
   | {
       id: string;
@@ -10,9 +8,7 @@ export type ChatMessage =
       id: string;
       role: "assistant";
       text: string;
-      technical?: SupportTechnicalInfo;
       needsOrderId?: boolean;
-      traceId: string;
     }
   | {
       id: string;

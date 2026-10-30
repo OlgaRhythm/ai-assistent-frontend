@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ApiError, generateTraceId, sendSupportMessage } from "./api/client";
+import { ApiError, generateTraceId, sendSupportMessage, setAuthToken } from "./api/client";
 import { ResponseType } from "./api/types";
 import { ChatWindow } from "./components/ChatWindow";
 import { MessageInput } from "./components/MessageInput";
-import { SettingsMenu } from "./components/SettingsMenu";
+import { NewConversationButton } from "./components/NewConversationButton";
 import type { ChatMessage } from "./types/chat";
 import "./App.css";
 
@@ -23,8 +23,24 @@ function createMessageId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function consumeSsoTokenFromUrl(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("sso_token");
+  if (!token) return null;
+
+  params.delete("sso_token");
+  const query = params.toString();
+  const newUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
+  window.history.replaceState({}, "", newUrl);
+  return token;
+}
+
 function App() {
-  const [userId, setUserId] = useState(() => readOrCreateId("ai-assistent-userId"));
+  const [authToken] = useState(() => {
+    const token = consumeSsoTokenFromUrl();
+    setAuthToken(token);
+    return token;
+  });
   const [sessionId, setSessionId] = useState(() => readOrCreateId("ai-assistent-sessionId"));
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isSending, setIsSending] = useState(false);
@@ -42,7 +58,7 @@ function App() {
 
     try {
       const response = await sendSupportMessage(
-        { userId, sessionId, message: text, orderId },
+        { sessionId, message: text, orderId },
         traceId,
       );
 
@@ -50,9 +66,7 @@ function App() {
         id: createMessageId(),
         role: "assistant",
         text: response.text,
-        technical: response.technical,
         needsOrderId: response.type === ResponseType.ORDERINFOREQUEST,
-        traceId,
       });
     } catch (error) {
       const text =
@@ -75,32 +89,29 @@ function App() {
     localStorage.setItem("ai-assistent-sessionId", String(newSessionId));
     setSessionId(newSessionId);
     setMessages([]);
+    setSelectedOrderId(undefined);
   }
 
-  function handleApplySettings(newUserId: number, newSessionId: number) {
-    localStorage.setItem("ai-assistent-userId", String(newUserId));
-    localStorage.setItem("ai-assistent-sessionId", String(newSessionId));
-    setUserId(newUserId);
-    setSessionId(newSessionId);
-    setMessages([]);
-    setSelectedOrderId(undefined);
+  if (!authToken) {
+    return (
+      <div className="app app--unauthenticated">
+        <p>
+          This assistant must be opened from the marketplace — no identity token was
+          provided.
+        </p>
+      </div>
+    );
   }
 
   return (
     <div className="app">
       <header className="app__header">
         <h1>AI Support Assistant</h1>
-        <SettingsMenu
-          userId={userId}
-          sessionId={sessionId}
-          onApply={handleApplySettings}
-          onNewConversation={handleNewConversation}
-        />
+        <NewConversationButton onConfirm={handleNewConversation} />
       </header>
 
       <ChatWindow
         messages={messages}
-        userId={userId}
         selectedOrderId={selectedOrderId}
         onOrderChange={setSelectedOrderId}
         onOrderApply={handleApplyOrder}

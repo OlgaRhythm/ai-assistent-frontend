@@ -3,7 +3,6 @@ import { ApiError, fetchOrders } from "../api/client";
 import type { Order } from "../api/types";
 
 interface OrderSelectProps {
-  userId: number;
   selectedOrderId: number | undefined;
   onChange: (orderId: number | undefined) => void;
   onApply: (orderId: number) => void;
@@ -11,7 +10,6 @@ interface OrderSelectProps {
 }
 
 export function OrderSelect({
-  userId,
   selectedOrderId,
   onChange,
   onApply,
@@ -23,7 +21,7 @@ export function OrderSelect({
   useEffect(() => {
     let cancelled = false;
 
-    fetchOrders(userId)
+    fetchOrders()
       .then((result) => {
         if (!cancelled) setOrders(result);
       })
@@ -37,7 +35,7 @@ export function OrderSelect({
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, []);
 
   if (error) {
     return <p className="order-select__error">{error}</p>;

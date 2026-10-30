@@ -41,17 +41,13 @@ const KNOWN_ERROR_PATTERNS: Array<{ test: RegExp; message: string }> = [
     message: "The selected order is invalid. Please pick an order from the list again.",
   },
   {
-    test: /userId (must be an integer|should not be empty)/i,
-    message: "Your user ID is invalid. Please check it in Settings.",
-  },
-  {
     test: /sessionId (must be an integer|should not be empty)/i,
     message: "Your session ID is invalid. Please start a new conversation or check it in Settings.",
   },
-  // GET /orders custom validation (support.controller.ts)
+  // auth.middleware.ts — missing/expired/invalid SSO token
   {
-    test: /positive integer userId is required/i,
-    message: "Please set a valid user ID in Settings to load orders.",
+    test: /(missing bearer token|invalid or expired token)/i,
+    message: "Your session has expired. Please reopen the assistant from the marketplace.",
   },
   // ML service rejected the text as non-English (FastAPI AppError, surfaces
   // as a generic axios 422 by the time it reaches the frontend)
@@ -124,12 +120,22 @@ function extractErrorMessage(details: unknown, status: number): string {
   return toFriendlyMessage(raw, status);
 }
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null): void {
+  authToken = token;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...init?.headers },
+      headers: {
+        "Content-Type": "application/json",
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        ...init?.headers,
+      },
     });
   } catch (cause) {
     throw new ApiError(
@@ -158,8 +164,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 // Correlates one exchange across frontend/backend/ML-service logs — sent as
-// the X-Trace-Id header and shown in the UI (Technical details / error
-// messages) so a report can be grepped for across all three services.
+// the X-Trace-Id header so a report can be grepped for across all three services.
 export function generateTraceId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -178,6 +183,6 @@ export function sendSupportMessage(
   });
 }
 
-export function fetchOrders(userId: number): Promise<Order[]> {
-  return request<Order[]>(`/orders?userId=${encodeURIComponent(userId)}`);
+export function fetchOrders(): Promise<Order[]> {
+  return request<Order[]>("/orders");
 }
