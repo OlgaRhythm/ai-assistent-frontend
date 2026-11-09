@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 import { MessageInput } from "./MessageInput";
 
 describe("MessageInput", () => {
-  test("Send is disabled below 3 trimmed characters and enabled at 3+", async () => {
+  test("кнопка Send отключена при менее чем 3 символах (после trim) и включена при 3+", async () => {
     const onSend = vi.fn();
     const user = userEvent.setup();
     render(<MessageInput onSend={onSend} disabled={false} />);
@@ -19,7 +19,7 @@ describe("MessageInput", () => {
     expect(button).not.toBeDisabled();
   });
 
-  test("submitting sends the trimmed text and clears the input", async () => {
+  test("отправка передаёт обрезанный (trim) текст и очищает поле ввода", async () => {
     const onSend = vi.fn();
     const user = userEvent.setup();
     render(<MessageInput onSend={onSend} disabled={false} />);
@@ -31,7 +31,7 @@ describe("MessageInput", () => {
     expect(screen.getByPlaceholderText("Type a message...")).toHaveValue("");
   });
 
-  test("Enter submits, Shift+Enter inserts a newline instead", async () => {
+  test("Enter отправляет сообщение, Shift+Enter вставляет перевод строки", async () => {
     const onSend = vi.fn();
     const user = userEvent.setup();
     render(<MessageInput onSend={onSend} disabled={false} />);
@@ -47,7 +47,7 @@ describe("MessageInput", () => {
     expect(onSend).toHaveBeenCalledWith("line one\nline two");
   });
 
-  test("disabled prop disables both the textarea and the Send button", () => {
+  test("проп disabled блокирует и textarea, и кнопку Send", () => {
     render(<MessageInput onSend={vi.fn()} disabled={true} />);
     expect(screen.getByPlaceholderText("Type a message...")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();

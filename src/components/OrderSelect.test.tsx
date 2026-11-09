@@ -20,7 +20,7 @@ beforeEach(() => {
 });
 
 describe("OrderSelect", () => {
-  test("loads orders and lists them once fetched", async () => {
+  test("загружает заказы и отображает их списком после получения", async () => {
     fetchOrders.mockResolvedValue([
       { id: 1, orderComposition: "book", status: "created", deliveryDate: "2026-01-01" },
     ]);
@@ -29,7 +29,7 @@ describe("OrderSelect", () => {
     await waitFor(() => expect(screen.getByText("#1 · book · created")).toBeInTheDocument());
   });
 
-  test("shows a friendly error and reports it when loading orders fails", async () => {
+  test("показывает понятную ошибку и репортит её при сбое загрузки заказов", async () => {
     fetchOrders.mockRejectedValue(new ApiError("Failed to load orders."));
     render(<OrderSelect selectedOrderId={undefined} onChange={vi.fn()} onApply={vi.fn()} disabled={false} />);
 
@@ -37,7 +37,7 @@ describe("OrderSelect", () => {
     expect(reportFrontendError).toHaveBeenCalled();
   });
 
-  test("Apply is disabled until an order is selected, then calls onApply with its id", async () => {
+  test("кнопка Apply недоступна до выбора заказа, затем вызывает onApply с его id", async () => {
     fetchOrders.mockResolvedValue([
       { id: 7, orderComposition: "lamp", status: "created", deliveryDate: "2026-01-02" },
     ]);

@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 import { NewConversationButton } from "./NewConversationButton";
 
 describe("NewConversationButton", () => {
-  test("clicking shows a confirmation prompt instead of confirming immediately", async () => {
+  test("клик показывает запрос подтверждения, а не подтверждает сразу", async () => {
     const onConfirm = vi.fn();
     const user = userEvent.setup();
     render(<NewConversationButton onConfirm={onConfirm} />);
@@ -15,7 +15,7 @@ describe("NewConversationButton", () => {
     expect(screen.getByText("Are you sure?")).toBeInTheDocument();
   });
 
-  test("confirming with Yes calls onConfirm and hides the prompt", async () => {
+  test("подтверждение кнопкой Yes вызывает onConfirm и скрывает запрос", async () => {
     const onConfirm = vi.fn();
     const user = userEvent.setup();
     render(<NewConversationButton onConfirm={onConfirm} />);
@@ -27,7 +27,7 @@ describe("NewConversationButton", () => {
     expect(screen.getByRole("button", { name: "New conversation" })).toBeInTheDocument();
   });
 
-  test("declining with No cancels without calling onConfirm", async () => {
+  test("отказ кнопкой No отменяет действие без вызова onConfirm", async () => {
     const onConfirm = vi.fn();
     const user = userEvent.setup();
     render(<NewConversationButton onConfirm={onConfirm} />);

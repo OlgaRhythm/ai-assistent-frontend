@@ -38,14 +38,14 @@ beforeEach(() => {
   window.history.pushState({}, "", "/");
 });
 
-describe("authentication gate", () => {
-  test("shows a gate message and no chat UI without an SSO token", () => {
+describe("шлюз аутентификации", () => {
+  test("показывает сообщение-шлюз и не рендерит чат без SSO-токена", () => {
     render(<App />);
     expect(screen.getByText(/must be opened from the marketplace/i)).toBeInTheDocument();
     expect(screen.queryByText("AI Support Assistant")).not.toBeInTheDocument();
   });
 
-  test("strips the sso_token query param and shows the chat UI once a token is present", () => {
+  test("обрезает query-параметр sso_token и показывает чат, если токен присутствует", () => {
     navigateWithToken("abc123");
     render(<App />);
     expect(screen.getByText("AI Support Assistant")).toBeInTheDocument();
@@ -53,8 +53,8 @@ describe("authentication gate", () => {
   });
 });
 
-describe("sending a message", () => {
-  test("renders the user's message immediately and the assistant's reply once it resolves", async () => {
+describe("отправка сообщения", () => {
+  test("сразу показывает сообщение пользователя и ответ ассистента после его получения", async () => {
     const user = userEvent.setup();
     sendSupportMessage.mockResolvedValue({ text: "Sure, here is your answer.", type: ResponseType.ANSWER });
     navigateWithToken();
@@ -66,7 +66,7 @@ describe("sending a message", () => {
     await waitFor(() => expect(screen.getByText("Sure, here is your answer.")).toBeInTheDocument());
   });
 
-  test("reuses the sessionId already stored in localStorage", async () => {
+  test("переиспользует sessionId, уже сохранённый в localStorage", async () => {
     localStorage.setItem("ai-assistent-sessionId", "4242");
     const user = userEvent.setup();
     sendSupportMessage.mockResolvedValue({ text: "ok", type: ResponseType.ANSWER });
@@ -79,7 +79,7 @@ describe("sending a message", () => {
     expect(sendSupportMessage.mock.calls[0][0]).toMatchObject({ sessionId: 4242 });
   });
 
-  test("shows a system error message and reports it when sending fails", async () => {
+  test("показывает системное сообщение об ошибке и репортит её при сбое отправки", async () => {
     const user = userEvent.setup();
     sendSupportMessage.mockRejectedValue(
       new ApiError("The assistant ran into a problem answering. Please try again."),
@@ -98,8 +98,8 @@ describe("sending a message", () => {
   });
 });
 
-describe("new conversation", () => {
-  test("clears messages and starts a fresh session after confirming", async () => {
+describe("новая сессия", () => {
+  test("очищает сообщения и начинает новую сессию после подтверждения", async () => {
     const user = userEvent.setup();
     sendSupportMessage.mockResolvedValue({ text: "ok", type: ResponseType.ANSWER });
     navigateWithToken();
@@ -117,7 +117,7 @@ describe("new conversation", () => {
     expect(localStorage.getItem("ai-assistent-sessionId")).not.toBe(before);
   });
 
-  test("does nothing if the confirmation is declined", async () => {
+  test("ничего не делает, если подтверждение отклонено", async () => {
     const user = userEvent.setup();
     sendSupportMessage.mockResolvedValue({ text: "ok", type: ResponseType.ANSWER });
     navigateWithToken();

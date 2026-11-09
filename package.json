@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "rm -rf allure-results && vitest run",
     "report:allure": "npx allure generate allure-results -o allure-report --clean",
     "open:allure": "npx allure open allure-report"
   },

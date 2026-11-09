@@ -20,8 +20,8 @@ beforeEach(() => {
   setAuthToken(null);
 });
 
-describe("request headers", () => {
-  test("sends a POST with the trace id header and no Authorization when no token is set", async () => {
+describe("заголовки запроса", () => {
+  test("отправляет POST с заголовком trace id и без Authorization, если токен не установлен", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, { text: "hi", type: ResponseType.ANSWER }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -36,7 +36,7 @@ describe("request headers", () => {
     expect(JSON.parse(init.body)).toEqual({ sessionId: 1, message: "hello" });
   });
 
-  test("adds an Authorization header once a token is set", async () => {
+  test("добавляет заголовок Authorization после установки токена", async () => {
     setAuthToken("sso-abc");
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, []));
     vi.stubGlobal("fetch", fetchMock);
@@ -49,7 +49,7 @@ describe("request headers", () => {
   });
 });
 
-describe("error message mapping", () => {
+describe("маппинг сообщений об ошибках", () => {
   test.each([
     [
       "message must be longer than or equal to 3 characters",
@@ -84,7 +84,7 @@ describe("error message mapping", () => {
       "ML service returned invalid classifier metadata",
       "The assistant had trouble processing your message. Please try again.",
     ],
-  ])("maps %j to a friendly message", async (raw, expected) => {
+  ])("сопоставляет %j с понятным сообщением", async (raw, expected) => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(400, { error: raw }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -93,7 +93,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("joins class-validator constraint messages from the errors array", async () => {
+  test("собирает сообщения class-validator из массива errors", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse(400, {
         errors: [{ isNotEmpty: "message should not be empty" }],
@@ -106,7 +106,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("falls back to a generic 5xx message for unrecognized server errors", async () => {
+  test("использует общее сообщение для нераспознанных ошибок 5xx", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(503, { error: "database unreachable" }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -116,7 +116,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("falls back to a generic 4xx message for unrecognized client errors", async () => {
+  test("использует общее сообщение для нераспознанных ошибок 4xx", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(403, { error: "forbidden" }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -125,7 +125,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("reports the status code when the error body has no recognizable shape", async () => {
+  test("сообщает код статуса, если тело ошибки не имеет распознаваемой формы", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(502, { somethingElse: true }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -134,7 +134,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("wraps a network failure as a connectivity ApiError", async () => {
+  test("оборачивает сетевой сбой в ApiError о проблеме соединения", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
 
     await expect(sendSupportMessage({ sessionId: 1, message: "hi" }, "t")).rejects.toMatchObject({
@@ -142,7 +142,7 @@ describe("error message mapping", () => {
     });
   });
 
-  test("rejections are instances of ApiError carrying the status", async () => {
+  test("отклонённые промисы — это ApiError с сохранённым статусом", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(jsonResponse(400, { error: "message should not be empty" })),
@@ -155,7 +155,7 @@ describe("error message mapping", () => {
 });
 
 describe("reportFrontendError", () => {
-  test("posts to /logs/frontend and never throws even if the request fails", async () => {
+  test("отправляет POST на /logs/frontend и не бросает исключение даже при сбое запроса", async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error("network down"));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -166,7 +166,7 @@ describe("reportFrontendError", () => {
 });
 
 describe("generateTraceId", () => {
-  test("returns a non-empty id that differs between calls", () => {
+  test("возвращает непустой id, различающийся между вызовами", () => {
     const a = generateTraceId();
     const b = generateTraceId();
     expect(a.length).toBeGreaterThan(0);
