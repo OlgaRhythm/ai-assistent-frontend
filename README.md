@@ -122,3 +122,16 @@ npx tsc --noEmit -p tsconfig.app.json   # типы
 npm run lint                            # oxlint
 npm run build                           # сборка
 ```
+
+## Тестирование и отчёт
+
+```bash
+npm test               # запускает Vitest-тесты и пишет результаты для Allure в allure-results/
+npm run report:allure  # собирает HTML-отчёт в allure-report/
+npm run open:allure     # поднимает локальный сервер и открывает отчёт в браузере
+```
+
+Это отдельный отчёт только для фронтенда — тесты бэкенда и red-team-проверки живут в
+[`Market_AI_assistent_backend`](https://github.com/An-Vas/Market_AI_assistent_backend) и генерируют свои
+собственные Allure-отчёты там же (см. раздел "Тестирование и отчёты" в его README). Как и у бэкенда,
+`open:allure` нельзя заменить открытием `index.html` через `file://` — отчёту нужен HTTP-сервер.
