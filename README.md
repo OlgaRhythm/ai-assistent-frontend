@@ -135,3 +135,9 @@ npm run open:allure     # поднимает локальный сервер и 
 [`Market_AI_assistent_backend`](https://github.com/An-Vas/Market_AI_assistent_backend) и генерируют свои
 собственные Allure-отчёты там же (см. раздел "Тестирование и отчёты" в его README). Как и у бэкенда,
 `open:allure` нельзя заменить открытием `index.html` через `file://` — отчёту нужен HTTP-сервер.
+
+## Релизы Docker
+
+Тег `v1.2.3` выпускает Docker-образы, состав зависимостей, отчёты уязвимостей и контрольные суммы после успешных проверок CI.
+Общий формат релизов и CI описан в репозитории стенда.
+Общий учебный стенд собирается в [ai-assistant-stand](https://github.com/Leemoon228/ai-assistant-stand).
