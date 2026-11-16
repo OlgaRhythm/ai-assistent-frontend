@@ -73,7 +73,7 @@ docker compose up -d --build
 ### Запуск всего стека сразу (frontend + backend + ML-сервис)
 
 В родительской папке, где лежат все три репозитория как соседние директории
-(`Market_AI_assistent_backend`, [`ai-assistant`](https://gitlab.com/Elitra/ai-assistant),
+(`Market_AI_assistent_backend`, [`ai-assistant`](https://github.com/Leemoon228/ai-assistant),
 `ai-assistent-frontend`), есть общий `docker-compose.yml`, который поднимает
 все три сервиса в одной Docker-сети и связывает их по именам сервисов:
 

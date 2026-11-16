@@ -82,7 +82,7 @@ function App() {
 
   function handleApplyOrder(orderId: number) {
     setSelectedOrderId(orderId);
-    handleSend(`Order #${orderId} selected.`, orderId);
+    handleSend(`Order #${orderId}`, orderId);
   }
 
   function handleNewConversation() {
